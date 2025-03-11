@@ -1,0 +1,123 @@
+{% include 'store/base.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+    <br>
+    <div class="container bg-white shadow-md p-5">
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Create Your Account</h3>
+        <p class="text-gray-600 mb-6">Order your favorite drink today!</p>
+
+        <form method="POST" autocomplete="off" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Username Field -->
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    Username
+                </label>
+                <input
+                    type="text"
+                    name="{{ form.username.name }}"
+                    id="{{ form.username.id_for_label }}"
+                    value="{{ form.username.value|default:'' }}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm {% if form.username.errors %}border-red-500{% endif %}"
+                    placeholder="Enter your username"
+                >
+                {% if form.username.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    Email
+                </label>
+                <input
+                    type="email"
+                    name="{{ form.email.name }}"
+                    id="{{ form.email.id_for_label }}"
+                    value="{{ form.email.value|default:'' }}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm {% if form.email.errors %}border-red-500{% endif %}"
+                    placeholder="Enter your email"
+                >
+                {% if form.email.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Password1 Field -->
+            <div>
+                <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    Password
+                </label>
+                <input
+                    type="password"
+                    name="{{ form.password1.name }}"
+                    id="{{ form.password1.id_for_label }}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm {% if form.password1.errors %}border-red-500{% endif %}"
+                    placeholder="Enter your password"
+                >
+                {% if form.password1.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Password2 Field -->
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    Confirm Password
+                </label>
+                <input
+                    type="password"
+                    name="{{ form.password2.name }}"
+                    id="{{ form.password2.id_for_label }}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm {% if form.password2.errors %}border-red-500{% endif %}"
+                    placeholder="Confirm your password"
+                >
+                {% if form.password2.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+                Sign Up
+            </button>
+        </form>
+       
+    </div>
+
+    <!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Custom Alert Script -->
+<script>
+const showAlert = (title, message, onConfirm = null, onCancel = null) => {
+    const $alertContainer = $('<div>').addClass("fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50");
+    const $alertBox = $('<div>').addClass("bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full");
+    $alertBox.append($('<h1>').text(title).addClass("text-slate-800 text-xl font-bold mb-4"));
+    $alertBox.append($('<p>').text(message).addClass("text-gray-800 text-lg mb-4"));
+    const $buttonContainer = $('<div>').addClass("flex justify-center space-x-4");
+    const $okButton = $('<button>').text("OK").addClass("bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600").on("click", () => $alertContainer.remove());
+    $buttonContainer.append($okButton);
+    $alertBox.append($buttonContainer);
+    $alertContainer.append($alertBox);
+    $('body').append($alertContainer);
+};
+
+$(document).ready(function() {
+    {% if success %}
+        showAlert("Success", "Account created successfully!");
+    {% endif %}
+});
+</script>
+
+{% endblock %}

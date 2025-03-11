@@ -1,0 +1,197 @@
+{% include "store/base.html" %}
+
+
+{% load static %}
+
+
+{% block content %}
+
+{% load mathfilters %}
+
+
+<main class="pt-5">
+    
+    <div class="container">
+      
+      <h1 class="h5"> Shopping cart </h1>
+
+	<hr>
+
+  {% for item in cart %}
+  
+  {% with product=item.product %}
+      
+      <br>
+
+      <div class="row mb-4 border product-item">
+        
+        <div class="col-md-3 col-lg-2 order-md-first bg-light">
+        
+            <img class="img-fluid mx-auto d-block" width="200px" alt="Responsive image" src="{{product.image.url}}"> <!-- Product image -->
+        
+        </div>
+
+        
+        <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+          
+          <a href="{{product.get_absolute_url}}" class="text-decoration-none text-reset"> <!-- Product get absolute url -->
+          
+            <h1 class="h5 pt-2">{{product.title}} <!-- Product title --> </h1>
+          
+          </a>
+          
+          <div class="border">
+            
+            <div class="col border-bottom">
+              
+                <div class="row p-3">
+              
+                <div class="col-6"> Product </div>
+              
+                <div class="col-6 text-end"><span class="h6 fw-bold">$ {{product.price|mul:item.qty}}<!-- Product price --> </span></div>
+            
+              </div>
+            
+            </div>
+            
+            <div class="col">
+              
+              <div class="row p-3">
+                
+                <div class="col-12">
+                  
+                  <label for="select">Qty</label>
+
+                  &nbsp; 
+                  
+                  <select id="select{{ product.id }}" name="qty">
+                    <option selected>{{ item.qty }}</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                  
+                  <br> <br>
+
+                  <button type="button" data-index="{{product.id}}"
+                    class="update-button btn btn-primary btn-sm ">
+                    Update
+                  
+                  </button>
+                  
+                  &nbsp;
+
+                  <button type="button" 
+                    class="delete-button btn btn-danger btn-sm " data-index="{{product.id}}">
+                    Delete
+        
+                  </button>
+        
+
+                </div>
+        
+            </div>
+        
+            </div>
+    
+            </div>
+    
+        </div>
+      
+    </div>
+
+    {% endwith %}
+    {% endfor %}
+      
+
+
+      <div class="col-12 text-end">
+ 
+        <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{cart.get_total}}</div></div>
+ 
+      </div>
+ 
+
+    </div>
+  
+
+ </main>
+ 
+ <script>
+  $(document).on('click', '.delete-button', function(e){
+    var button = $(this);
+    var cartItem = button.closest('.product-item');
+    e.preventDefault();
+    console.log('we click and get btn')
+    console.log("Sending product_id:", $(this).data('index'));
+
+    
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'cart-delete' %}",  // Ensure the correct Django URL name
+        data: {
+            product_id: $(this).data('index'),
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            action: 'post'
+        },
+        success: function(json){
+          console.log("we here success")
+            //console.log(json);
+          
+            $('#cart-qty').text(json.qty);
+            $('#total').text(json.total)
+            cartItem.fadeOut(300, function() {  // Fade out over 300ms, then remove
+              $(this).remove();
+          })
+        },
+        error: function(xhr, errmsg, err){
+          console.log("Error:", errmsg);
+      }
+    });
+});
+
+$(document).on('click', '.update-button', function(e){
+  var button = $(this);
+  var productId = button.data('index');
+  var qty = $('#select' + productId).val();
+
+  console.log('Sending UPDATE request for product_id:', productId, 'qty:', qty);
+
+  if (!qty || qty === '') {
+      console.log("Error: No quantity selected");
+      return;  // Don’t send the request
+  }
+
+  
+  $.ajax({
+      type: 'POST',
+      url: "{% url 'cart-update' %}",  // Ensure the correct Django URL name
+      data: {
+          product_id: $(this).data('index'),
+          product_qty: $('#select' + productId).val(),
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          action: 'post'
+      },
+      success: function(json){
+        console.log("we here success")
+          //console.log(json);
+          location.reload()
+        
+          $('#cart-qty').text(json.qty);
+          $('#total').text(json.total)
+          cartItem.fadeOut(300, function() {  // Fade out over 300ms, then remove
+            $(this).remove();
+        })
+      },
+      error: function(xhr, errmsg, err){
+        console.log("Error:", errmsg);
+    }
+  });
+});
+ </script>
+
+
+
+
+{% endblock %}

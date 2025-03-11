@@ -1,0 +1,120 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<section class="py-4 text-center container">
+
+    <div class="row py-lg-5">
+    
+        <div class="col-lg-6 col-md-8 mx-auto">
+            
+
+            <h4> Welcome to my Shop </h4>
+
+
+            <br>
+            
+
+            <p class="lead text-muted">
+
+            Browse our extensive collection.
+
+            </p>
+
+
+            <br>
+    
+            <a href="#" class="btn btn-primary my-2"> Create an account </a>
+            
+            
+        </div>
+    
+    </div>
+
+
+</section>
+{% endif %}
+<!-- All products section -->
+ <!-- All products section -->
+ {% if user.is_authenticated %}
+ <section class="py-4 text-center container">
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1 class="display-4">Welcome Dev</h1>
+      <h2 class="mb-4">To <span style="background-image: linear-gradient(to right, #4c6ef5, #6610f2); -webkit-background-clip: text; color: transparent;">Django</span>
+        error coffee</h2>
+      
+      <!-- Image with Bootstrap classes for responsiveness -->
+      <img src="{% static 'img/shoping.png' %}" alt="shopping illustration" class="" style="max-width: 100%; height: auto;" />
+    </div>
+  </div>
+</section>
+
+
+ <div class="album py-5 bg-light">
+        
+  <div class="container">
+
+    <div class="pb-3 h5"> All products </div>
+
+
+    <hr>
+
+    <br>
+    
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+
+      
+      {%for product in my_products %}
+      <div class="card m-2">
+        <img src="{{product.image.url}}" class="card-img-top" alt="green iguana" />
+        <div class="card-body">
+          <h4>{{product.title}}</h4>
+          <p class="card-text">
+           {{product.description}}
+          </p>
+          <div>
+            <a href="{{product.get_absolute_url}}"><button class="btn btn-primary" type="button" >Buy</button></a>
+            <button class="btn btn-outline" type="button">{{product.price}} $</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      
+
+    </div>
+  </div>
+</div>
+<script>
+
+  $(document).on('click', '#add-button-store', function(e){
+      e.preventDefault();
+      
+      $.ajax({
+          type: 'POST',
+          url: "{% url 'cart-add' %}",  // Ensure the correct Django URL name
+          data: {
+              product_id: $('#add-button').val(),
+              product_quantity: 1, // use .val() instead of .text()
+              csrfmiddlewaretoken: "{{ csrf_token }}",
+              action: 'post'
+          },
+          success: function(json){
+              console.log(json);
+
+              $('#cart-qty').text(json.qty);
+          },
+          error: function(xhr, errmsg, err){
+              console.log("Error:", errmsg);
+          }
+      });
+  });
+  
+
+</script>
+{% endif %}
+
+{% endblock %}
